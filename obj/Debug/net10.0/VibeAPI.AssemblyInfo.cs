@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VibeAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8de5c02434485e7b4a6049ffec574668e67258e5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8ea16f366f85f64889d54f742c5b0f14714cfc11")]
 [assembly: System.Reflection.AssemblyProductAttribute("VibeAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VibeAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

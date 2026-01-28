@@ -1,0 +1,8 @@
+root = true
+
+[*.cs]
+# Remove unnecessary usings (IDE analyzer)
+dotnet_diagnostic.IDE0005.severity = error
+
+# Compiler diagnostic for unnecessary using directives
+dotnet_diagnostic.CS8019.severity = error

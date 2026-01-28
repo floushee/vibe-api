@@ -9,6 +9,7 @@ These rules apply to *every* change in this repository.
 - Keep repository docs up to date when code changes affect them (at minimum: this file, `README.md`, relevant `specs/*`, and `src/VibeAPI.API/VibeAPI.http`).
 - Keep the public HTTP API compatible with the specs (unless the spec is being updated in the same change).
 - Ensure file names match the primary type they contain (no placeholder `Class1.cs`).
+- Keep one top-level `class` or `record` per file.
 
 ## Architecture & dependency direction
 

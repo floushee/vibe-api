@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <!-- Enforce IDE code-style analyzers (including IDE0005) during build/test -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <!-- Required for certain IDE analyzers (e.g., IDE0005) to run on build -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- Avoid documentation warnings when docs generation is enabled -->
+    <NoWarn>$(NoWarn);1591</NoWarn>
+
+    <!-- Make unnecessary using directives fail the build (CS8019) -->
+    <WarningsAsErrors>$(WarningsAsErrors);CS8019</WarningsAsErrors>
+  </PropertyGroup>
+</Project>
