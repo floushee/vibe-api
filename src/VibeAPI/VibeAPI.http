@@ -1,10 +1,44 @@
 @VibeAPI_HostAddress = http://localhost:5153
-
-###
-GET {{VibeAPI_HostAddress}}/weatherforecast/
-Accept: application/json
+@TodoId = 00000000-0000-0000-0000-000000000000
 
 ###
 GET {{VibeAPI_HostAddress}}
+Accept: application/json
+
+###
+# List todos
+GET {{VibeAPI_HostAddress}}/todos?offset=0&limit=50
+Accept: application/json
+
+###
+# Get todo by id
+GET {{VibeAPI_HostAddress}}/todos/{{TodoId}}
+Accept: application/json
+
+###
+# Create todo
+POST {{VibeAPI_HostAddress}}/todos
+Content-Type: application/json
+Accept: application/json
+
+{
+	"title": "Buy milk",
+	"completed": false
+}
+
+###
+# Update todo (full update)
+PUT {{VibeAPI_HostAddress}}/todos/{{TodoId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+	"title": "Buy oat milk",
+	"completed": true
+}
+
+###
+# Delete todo
+DELETE {{VibeAPI_HostAddress}}/todos/{{TodoId}}
 Accept: application/json
 
