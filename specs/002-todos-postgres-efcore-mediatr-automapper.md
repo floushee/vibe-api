@@ -13,7 +13,7 @@ The public HTTP API stays compatible with the existing Todos endpoints.
 ## High-level architecture
 Projects are split by responsibility:
 
-- `src/VibeAPI` (API)
+- `src/VibeAPI.API` (API)
   - Minimal API endpoints
   - Composition root / DI wiring
 - `src/VibeAPI.Application` (Application)
@@ -65,8 +65,8 @@ Connection string is read from `ConnectionStrings:VibeDb`.
 
 Default values are in:
 
-- `src/VibeAPI/appsettings.json`
-- `src/VibeAPI/appsettings.Development.json`
+- `src/VibeAPI.API/appsettings.json`
+- `src/VibeAPI.API/appsettings.Development.json`
 
 For local development, you can override via environment variables (recommended):
 
@@ -78,10 +78,11 @@ This repo includes a `docker-compose.yml` to run PostgreSQL locally.
 - Start Postgres: `docker compose up -d`
 - Stop Postgres: `docker compose down`
 
-It initializes two databases on first run:
+It maps the container's `5432` to host port `5433`.
 
-- `vibeapi`
-- `vibeapi_dev`
+It initializes one database on first run:
+
+- `vibeapidb`
 
 With `ASPNETCORE_ENVIRONMENT=Development`, the API applies migrations at startup.
 
@@ -91,9 +92,9 @@ Migrations are owned by `VibeAPI.Data`.
 Typical workflow:
 
 - Add migration (from repo root):
-  - `dotnet tool run dotnet-ef migrations add <Name> --project src/VibeAPI.Data/VibeAPI.Data.csproj --startup-project src/VibeAPI/VibeAPI.csproj`
+  - `dotnet tool run dotnet-ef migrations add <Name> --project src/VibeAPI.Data/VibeAPI.Data.csproj --startup-project src/VibeAPI.API/VibeAPI.API.csproj`
 - Apply migration:
-  - `dotnet tool run dotnet-ef database update --project src/VibeAPI.Data/VibeAPI.Data.csproj --startup-project src/VibeAPI/VibeAPI.csproj`
+  - `dotnet tool run dotnet-ef database update --project src/VibeAPI.Data/VibeAPI.Data.csproj --startup-project src/VibeAPI.API/VibeAPI.API.csproj`
 
 In Development, the API applies migrations at startup.
 
