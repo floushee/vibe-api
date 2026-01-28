@@ -1,16 +1,70 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Data.Sqlite;
+using VibeAPI.Application.Common;
+using VibeAPI.Data;
 using VibeAPI.Todos;
 
 namespace VibeAPI.Tests;
+
+internal sealed class VibeApiFactory : WebApplicationFactory<Program>
+{
+    private readonly SqliteConnection _connection = new("Data Source=:memory:");
+
+    public VibeApiFactory()
+    {
+        _connection.Open();
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.UseEnvironment("Testing");
+
+        builder.ConfigureServices(services =>
+        {
+            services.RemoveAll<DbContextOptions<VibeDbContext>>();
+            services.RemoveAll<VibeDbContext>();
+            services.RemoveAll<IVibeDbContext>();
+
+            services.AddDbContext<VibeDbContext>(options => options.UseSqlite(_connection));
+            services.AddScoped<IVibeDbContext>(sp => sp.GetRequiredService<VibeDbContext>());
+        });
+    }
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var host = base.CreateHost(builder);
+
+        using var scope = host.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<VibeDbContext>();
+        db.Database.EnsureCreated();
+
+        return host;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+
+        if (disposing)
+        {
+            _connection.Dispose();
+        }
+    }
+}
 
 public class TodosApiTests
 {
     [Fact]
     public async Task Post_creates_todo_and_returns_location()
     {
-        using var factory = new WebApplicationFactory<Program>();
+        using var factory = new VibeApiFactory();
         using var client = factory.CreateClient();
 
         var response = await client.PostAsJsonAsync("/todos", new CreateTodoRequest("Buy milk", false));
@@ -28,7 +82,7 @@ public class TodosApiTests
     [Fact]
     public async Task Get_by_id_returns_404_when_missing()
     {
-        using var factory = new WebApplicationFactory<Program>();
+        using var factory = new VibeApiFactory();
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync($"/todos/{Guid.NewGuid()}");
@@ -39,7 +93,7 @@ public class TodosApiTests
     [Fact]
     public async Task Get_by_id_returns_400_when_id_is_invalid()
     {
-        using var factory = new WebApplicationFactory<Program>();
+        using var factory = new VibeApiFactory();
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync("/todos/not-a-guid");
@@ -50,7 +104,7 @@ public class TodosApiTests
     [Fact]
     public async Task List_returns_items_with_pagination_shape()
     {
-        using var factory = new WebApplicationFactory<Program>();
+        using var factory = new VibeApiFactory();
         using var client = factory.CreateClient();
 
         _ = await client.PostAsJsonAsync("/todos", new CreateTodoRequest("A", null));
@@ -69,7 +123,7 @@ public class TodosApiTests
     [Fact]
     public async Task Put_updates_todo()
     {
-        using var factory = new WebApplicationFactory<Program>();
+        using var factory = new VibeApiFactory();
         using var client = factory.CreateClient();
 
         var createdResponse = await client.PostAsJsonAsync("/todos", new CreateTodoRequest("Initial", null));
@@ -88,7 +142,7 @@ public class TodosApiTests
     [Fact]
     public async Task Delete_is_idempotent_and_returns_204()
     {
-        using var factory = new WebApplicationFactory<Program>();
+        using var factory = new VibeApiFactory();
         using var client = factory.CreateClient();
 
         var missingId = Guid.NewGuid();
@@ -99,7 +153,7 @@ public class TodosApiTests
     [Fact]
     public async Task Post_validates_title()
     {
-        using var factory = new WebApplicationFactory<Program>();
+        using var factory = new VibeApiFactory();
         using var client = factory.CreateClient();
 
         var response = await client.PostAsJsonAsync("/todos", new CreateTodoRequest(" ", null));
@@ -109,7 +163,7 @@ public class TodosApiTests
     [Fact]
     public async Task List_validates_limit_range()
     {
-        using var factory = new WebApplicationFactory<Program>();
+        using var factory = new VibeApiFactory();
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync("/todos?offset=0&limit=500");

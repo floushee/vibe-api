@@ -6,3 +6,4 @@ These rules apply to *every* change in this repository.
 
 - Add tests using xUnit for new/changed behavior.
 - Add or update request configs in src/VibeAPI/VibeAPI.http for any new/changed endpoints.
+- Ensure file names match the primary type they contain (no placeholder Class1.cs files).
