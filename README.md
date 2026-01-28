@@ -34,6 +34,11 @@ Try it via the request file:
 
 - `src/VibeAPI.API/VibeAPI.http`
 
+OpenAPI / docs (Development):
+
+- OpenAPI JSON: `GET /openapi/v1.json`
+- Scalar UI: `GET /scalar/v1`
+
 ## Configuration
 
 Connection string:
@@ -98,3 +103,13 @@ Specs live in `specs/`:
 
 - `specs/001-todos-api.md`
 - `specs/002-todos-postgres-efcore-mediatr-automapper.md`
+- `specs/003-openapi-scalar-ui.md`
+
+## Documentation hygiene
+
+When you change endpoints, behavior, or developer workflows, keep these in sync:
+
+- `README.md`
+- `AGENTS.md`
+- `src/VibeAPI.API/VibeAPI.http`
+- Relevant `specs/*`

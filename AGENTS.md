@@ -6,6 +6,7 @@ These rules apply to *every* change in this repository.
 
 - Add tests using xUnit for new/changed behavior (prefer API-level integration tests in `tests/VibeAPI.Tests`).
 - Add or update request examples in `src/VibeAPI.API/VibeAPI.http` for any new/changed endpoints.
+- Keep repository docs up to date when code changes affect them (at minimum: this file, `README.md`, relevant `specs/*`, and `src/VibeAPI.API/VibeAPI.http`).
 - Keep the public HTTP API compatible with the specs (unless the spec is being updated in the same change).
 - Ensure file names match the primary type they contain (no placeholder `Class1.cs`).
 
@@ -18,7 +19,7 @@ These rules apply to *every* change in this repository.
 
 Dependency flow should stay one-way:
 
-`API`  `Application`  (`Data`, `Entities`)
+`API` -> `Application` -> (`Data`, `Entities`)
 
 Notes:
 

@@ -6,6 +6,16 @@ GET {{VibeAPI_HostAddress}}
 Accept: application/json
 
 ###
+# OpenAPI JSON (Development)
+GET {{VibeAPI_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
+# Scalar UI (Development)
+# Note: this endpoint serves HTML.
+GET {{VibeAPI_HostAddress}}/scalar/v1
+
+###
 # List todos
 GET {{VibeAPI_HostAddress}}/todos?offset=0&limit=50
 Accept: application/json
