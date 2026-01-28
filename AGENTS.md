@@ -16,7 +16,7 @@ These rules apply to *every* change in this repository.
 - `src/VibeAPI.API`: Minimal API endpoints + composition root (DI).
 - `src/VibeAPI.Application`: MediatR requests/handlers, DTOs, AutoMapper profiles, and `IVibeDbContext` abstraction.
 - `src/VibeAPI.Data`: EF Core `VibeDbContext`, provider registration, migrations.
-- `src/VibeAPI.Entities`: persistence entities.
+- `src/VibeAPI.Domain`: domain model (persisted via EF Core).
 
 Dependency flow should stay one-way:
 
@@ -53,9 +53,13 @@ Common commands (run from repo root):
 - Prefer end-to-end-ish tests using `WebApplicationFactory<Program>` (see `TodosApiTests`).
 - Tests use SQLite in-memory and set `ASPNETCORE_ENVIRONMENT=Testing`.
 - `Program` must keep respecting `Testing` by not registering Npgsql when in that environment.
+- Keep `public partial class Program;` in the API project so tests can reference the entrypoint.
 
 ## API conventions
 
 - Routes are grouped under `/todos` and use standard HTTP status codes.
 - For invalid UUIDs, return `400` (current behavior uses `Results.Problem(...)`).
 - `DELETE /todos/{id}` is idempotent and returns `204` even if missing.
+- Validation rules (current behavior):
+	- `title` is trimmed, required, and must be `<= 200` characters.
+	- `GET /todos` defaults to `offset=0&limit=50`, enforces `offset >= 0` and `1 <= limit <= 200`.

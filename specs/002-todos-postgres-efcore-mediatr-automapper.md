@@ -25,7 +25,7 @@ Projects are split by responsibility:
   - EF Core `DbContext` implementation (`VibeDbContext`)
   - Provider wiring (`AddVibeData`)
   - Migrations
-- `src/VibeAPI.Entities` (Entities)
+- `src/VibeAPI.Domain` (Domain)
   - Persistence entities (e.g. `Todo`)
 
 ## Data model

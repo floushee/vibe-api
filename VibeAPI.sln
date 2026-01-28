@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VibeAPI.Tests", "tests\Vibe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VibeAPI.Entities", "src\VibeAPI.Entities\VibeAPI.Entities.csproj", "{5D9842D5-F83F-4EAA-845E-B8AE239086A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VibeAPI.Domain", "src\VibeAPI.Domain\VibeAPI.Domain.csproj", "{5D9842D5-F83F-4EAA-845E-B8AE239086A4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VibeAPI.Application", "src\VibeAPI.Application\VibeAPI.Application.csproj", "{AAA10FB3-C606-42A2-86A8-9C151E46A4EA}"
 EndProject

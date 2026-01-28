@@ -25,7 +25,7 @@ namespace VibeAPI.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("VibeAPI.Entities.Todo", b =>
+            modelBuilder.Entity("VibeAPI.Domain.Todo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()

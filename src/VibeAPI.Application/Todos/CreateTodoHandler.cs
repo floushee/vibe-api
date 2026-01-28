@@ -9,7 +9,7 @@ public sealed class CreateTodoHandler(IVibeDbContext db, IMapper mapper)
 {
     public async Task<VibeAPI.Todos.Todo> Handle(CreateTodoCommand request, CancellationToken cancellationToken)
     {
-        var entity = new Entities.Todo
+        var entity = new VibeAPI.Domain.Todo
         {
             Id = Guid.NewGuid(),
             Title = request.Title,

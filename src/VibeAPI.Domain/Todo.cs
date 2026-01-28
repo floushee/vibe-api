@@ -1,4 +1,4 @@
-namespace VibeAPI.Entities;
+namespace VibeAPI.Domain;
 
 public sealed class Todo
 {

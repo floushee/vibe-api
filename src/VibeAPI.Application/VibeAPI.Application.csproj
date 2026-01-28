@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\VibeAPI.Entities\VibeAPI.Entities.csproj" />
+    <ProjectReference Include="..\VibeAPI.Domain\VibeAPI.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

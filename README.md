@@ -4,7 +4,7 @@ A small, spec-driven ASP.NET Core Minimal API sample.
 
 - Minimal API endpoints in `src/VibeAPI.API`
 - CQRS-ish flow via MediatR in `src/VibeAPI.Application`
-- Persistence via EF Core in `src/VibeAPI.Data` + entities in `src/VibeAPI.Entities`
+- Persistence via EF Core in `src/VibeAPI.Data` + domain model in `src/VibeAPI.Domain`
 - xUnit integration tests in `tests/VibeAPI.Tests` (SQLite in-memory)
 
 ## Prerequisites
@@ -23,7 +23,13 @@ docker compose up -d
 2) Run the API (Development):
 
 ```bash
-dotnet run --project src/VibeAPI.API
+dotnet run --project src/VibeAPI.API --launch-profile http
+```
+
+To run with HTTPS locally:
+
+```bash
+dotnet run --project src/VibeAPI.API --launch-profile https
 ```
 
 The default launch profile listens on:
@@ -89,6 +95,10 @@ dotnet tool run dotnet-ef database update \
 
 ## Endpoints
 
+Root:
+
+- `GET /` (basic health/info)
+
 Todos:
 
 - `GET /todos?offset=&limit=`
@@ -96,6 +106,11 @@ Todos:
 - `POST /todos`
 - `PUT /todos/{id}`
 - `DELETE /todos/{id}` (idempotent `204`)
+
+Notes:
+
+- `GET /todos` defaults to `offset=0` and `limit=50`; it validates `offset >= 0` and `1 <= limit <= 200`.
+- `POST /todos` trims and validates `title` (required, max 200 chars); `completed` defaults to `false`.
 
 ## Specs
 

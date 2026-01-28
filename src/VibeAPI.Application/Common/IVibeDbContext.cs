@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using VibeAPI.Entities;
+using VibeAPI.Domain;
 
 namespace VibeAPI.Application.Common;
 
