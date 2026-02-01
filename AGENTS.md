@@ -13,47 +13,100 @@ These rules apply to *every* change in this repository.
 
 ## Architecture & dependency direction
 
-- `src/VibeAPI.API`: Minimal API endpoints + composition root (DI).
+- `src/VibeAPI.AppHost`: .NET Aspire orchestration host (defines and runs all services).
+- `src/VibeAPI.ServiceDefaults`: Shared service configuration (OpenTelemetry, resilience, health checks).
+- `src/VibeAPI.API`: Minimal API endpoints, composes services via dependency injection.
 - `src/VibeAPI.Application`: MediatR requests/handlers, DTOs, AutoMapper profiles, and `IVibeDbContext` abstraction.
 - `src/VibeAPI.Data`: EF Core `VibeDbContext`, provider registration, migrations.
-- `src/VibeAPI.Domain`: domain model (persisted via EF Core).
+- `src/VibeAPI.Domain`: Domain models (persisted via EF Core).
 
 Dependency flow should stay one-way:
 
-`API` -> `Application` -> (`Data`, `Entities`)
+`AppHost` -> `API` -> `Application` -> (`Data`, `Domain`)
+
+`ServiceDefaults` is referenced by all service projects (read-only configuration).
 
 Notes:
 
+- AppHost orchestrates PostgreSQL and the API; both are added to the distributed application builder.
+- The API calls `AddServiceDefaults()` for cross-cutting concerns (observability, resilience, health).
 - Endpoints should call MediatR via `ISender` and keep logic thin.
 - Validation belongs close to the HTTP boundary (see `TodoEndpoints`).
 - Mapping belongs in AutoMapper profiles in `VibeAPI.Application`.
+- Connection strings are injected by Aspire when running via AppHost; no hardcoding needed.
 
 ## Running & tooling
 
-- SDK is pinned via `global.json` (install the specified .NET SDK if you hit build errors).
-- Restore local tools before using EF commands: `dotnet tool restore`.
+### Prerequisites
+
+- .NET 10 SDK (version pinned in `global.json`).
+- Docker Desktop (Aspire uses it to run PostgreSQL).
+- HTTPS dev certificate trusted (run `./scripts/setup.sh` for first-time setup).
+
+With .NET 10, Aspire is included as NuGet packages — no workload install needed.
+
+### First-time setup
+
+```bash
+./scripts/setup.sh
+```
+
+Checks prerequisites, trusts the HTTPS dev certificate, and restores local tools.
+
+### Running the app
+
+```bash
+dotnet run --project src/VibeAPI.AppHost
+```
+
+On Linux, use the `http` launch profile to avoid HTTPS certificate issues with containerized services:
+
+```bash
+dotnet run --project src/VibeAPI.AppHost --launch-profile http
+```
+
+This starts PostgreSQL, the API, PgAdmin, and the Aspire Dashboard. No environment variables or connection strings to configure — Aspire handles everything via service discovery.
 
 ## Database & migrations
 
-- Local Postgres is available via `docker-compose.yml` and listens on host port `5433`.
-- In `Development`, the API applies EF migrations at startup.
-- Migrations are owned by `VibeAPI.Data`.
+- Migrations are owned by `VibeAPI.Data` and managed by `VibeAPI.API`.
+- In `Development`, the API automatically applies pending migrations at startup.
 
-Common commands (run from repo root):
+### With Aspire (AppHost)
 
-- Start DB: `docker compose up -d`
-- Stop DB: `docker compose down`
-- Add migration:
-	`dotnet tool run dotnet-ef migrations add <Name> --project src/VibeAPI.Data/VibeAPI.Data.csproj --startup-project src/VibeAPI.API/VibeAPI.API.csproj`
-- Apply migration:
-	`dotnet tool run dotnet-ef database update --project src/VibeAPI.Data/VibeAPI.Data.csproj --startup-project src/VibeAPI.API/VibeAPI.API.csproj`
+When running via `dotnet run --project src/VibeAPI.AppHost`:
+
+- PostgreSQL is orchestrated by Aspire with a data volume for persistence.
+- Database name: `vibedb` (created automatically).
+- Migrations are applied automatically when the API starts.
+- PgAdmin is available via the Aspire Dashboard for manual database inspection.
+
+### Manual migration commands
+
+Add migration:
+
+```bash
+dotnet tool run dotnet-ef migrations add <Name> \
+  --project src/VibeAPI.Data/VibeAPI.Data.csproj \
+  --startup-project src/VibeAPI.API/VibeAPI.API.csproj
+```
+
+Apply migration:
+
+```bash
+dotnet tool run dotnet-ef database update \
+  --project src/VibeAPI.Data/VibeAPI.Data.csproj \
+  --startup-project src/VibeAPI.API/VibeAPI.API.csproj
+```
 
 ## Testing conventions
 
 - Prefer end-to-end-ish tests using `WebApplicationFactory<Program>` (see `TodosApiTests`).
 - Tests use SQLite in-memory and set `ASPNETCORE_ENVIRONMENT=Testing`.
-- `Program` must keep respecting `Testing` by not registering Npgsql when in that environment.
+- The API must respect `Testing` environment by not registering Npgsql (PostgreSQL) in that mode.
 - Keep `public partial class Program;` in the API project so tests can reference the entrypoint.
+- Tests run without Aspire orchestration; the TestWebApplicationFactory sets up a minimal, in-memory environment.
+- Run tests with: `dotnet test`
 
 ## API conventions
 

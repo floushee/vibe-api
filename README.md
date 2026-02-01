@@ -9,32 +9,44 @@ A small, spec-driven ASP.NET Core Minimal API sample.
 
 ## Prerequisites
 
-- .NET SDK version from `global.json`
-- Docker (optional, for local PostgreSQL)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (version pinned in `global.json`)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Aspire uses it to run PostgreSQL)
 
-## Quick start (API + local Postgres)
+> **Note:** With .NET 10, Aspire is included as NuGet packages — no separate workload install needed.
 
-1) Start PostgreSQL:
+## First-time setup
 
-```bash
-docker compose up -d
-```
-
-2) Run the API (Development):
+Run the setup script to verify prerequisites and trust the HTTPS dev certificate:
 
 ```bash
-dotnet run --project src/VibeAPI.API --launch-profile http
+./scripts/setup.sh
 ```
 
-To run with HTTPS locally:
+This checks for .NET SDK and Docker, generates and trusts the ASP.NET Core HTTPS dev certificate (requires `sudo` on Linux), and restores local .NET tools.
+
+## Quick start
 
 ```bash
-dotnet run --project src/VibeAPI.API --launch-profile https
+dotnet run --project src/VibeAPI.AppHost
 ```
 
-The default launch profile listens on:
+> **Linux:** Use the `http` launch profile to avoid HTTPS certificate issues with containerized services:
+>
+> ```bash
+> dotnet run --project src/VibeAPI.AppHost --launch-profile http
+> ```
 
-- http://localhost:5153
+That's it. Aspire orchestrates everything — no environment variables or connection strings to configure.
+
+This starts:
+- **PostgreSQL** container with a persistent data volume
+- **API** service (development mode, hot reload enabled)
+- **Aspire Dashboard** for logs, traces, metrics, and health checks
+- **PgAdmin** for database management
+
+The API will be available at `http://localhost:5153`.
+
+The Aspire Dashboard URL is shown in the console output.
 
 Try it via the request file:
 
@@ -47,13 +59,13 @@ OpenAPI / docs (Development):
 
 ## Configuration
 
-Connection string:
+All configuration is handled automatically by Aspire:
+- PostgreSQL is orchestrated under the resource name `"postgres"`
+- The API references the database as `"vibedb"`
+- Connection strings are injected at runtime via service discovery
+- OpenTelemetry is collected automatically and visible in the Aspire Dashboard
 
-- `ConnectionStrings:VibeDb` (see `src/VibeAPI.API/appsettings*.json`)
-
-Recommended override via environment variables:
-
-- `ConnectionStrings__VibeDb`
+No environment variables or manual connection strings needed.
 
 ## Tests
 
@@ -71,7 +83,13 @@ Tests are self-contained:
 
 ## Migrations (EF Core)
 
-Local tools:
+Migrations are owned by `VibeAPI.Data` and managed by `VibeAPI.API`.
+
+In Development, the API automatically applies pending migrations at startup.
+
+### Manual migration commands:
+
+Local tools (if not already restored):
 
 ```bash
 dotnet tool restore
@@ -111,6 +129,50 @@ Notes:
 
 - `GET /todos` defaults to `offset=0` and `limit=50`; it validates `offset >= 0` and `1 <= limit <= 200`.
 - `POST /todos` trims and validates `title` (required, max 200 chars); `completed` defaults to `false`.
+
+## .NET Aspire
+
+This project uses .NET Aspire for local development and distributed application orchestration.
+
+### Projects
+
+- `src/VibeAPI.AppHost`: Orchestrates the entire application (API + PostgreSQL)
+- `src/VibeAPI.ServiceDefaults`: Shared service configuration (OpenTelemetry, resilience, health checks)
+- `src/VibeAPI.API`: ASP.NET Core Minimal API endpoints
+- `src/VibeAPI.Application`: CQRS/MediatR handlers, DTOs, mapping
+- `src/VibeAPI.Data`: EF Core DbContext and migrations
+- `src/VibeAPI.Domain`: Domain models
+
+### Key Features
+
+- **Service Orchestration**: All services managed from a single AppHost
+- **Automatic Service Discovery**: Services reference each other by name; connection strings are injected at runtime
+- **Health Checks**: `/health` (full) and `/alive` (liveness) endpoints
+- **OpenTelemetry Integration**: Automatic collection of metrics, logs, and traces with OTLP export support
+- **Resilience**: HTTP clients configured with standard resilience patterns
+- **Dashboard**: Built-in observability dashboard for monitoring services
+- **Data Persistence**: PostgreSQL data volume ensures state persists between runs
+
+### AppHost Configuration
+
+The AppHost defines:
+
+```csharp
+// PostgreSQL service with data volume and PgAdmin
+var postgres = builder.AddPostgres("postgres")
+    .WithDataVolume()
+    .WithPgAdmin()
+    .AddDatabase("vibedb");
+
+// API service with reference to PostgreSQL
+var api = builder.AddProject<Projects.VibeAPI_API>("vibeapi")
+    .WithReference(postgres);
+```
+
+- Resource name: `postgres`
+- Database: `vibedb`
+- API: `vibeapi`
+- PgAdmin is included for database management (accessible via dashboard)
 
 ## Specs
 
