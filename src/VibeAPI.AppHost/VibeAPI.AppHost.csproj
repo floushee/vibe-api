@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VibeAPI.API\VibeAPI.API.csproj" />
-    <ProjectReference Include="..\VibeAPI.ServiceDefaults\VibeAPI.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\VibeAPI.ServiceDefaults\VibeAPI.ServiceDefaults.csproj" IsAspireProjectResource="false" />
   </ItemGroup>
 
 </Project>
