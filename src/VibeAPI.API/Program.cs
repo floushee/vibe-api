@@ -2,10 +2,13 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using VibeAPI.Application;
+using VibeAPI.Application.Common;
 using VibeAPI.Data;
 using VibeAPI.Todos;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -13,7 +16,8 @@ builder.Services.AddOpenApi();
 
 if (!builder.Environment.IsEnvironment("Testing"))
 {
-    builder.Services.AddVibeData(builder.Configuration);
+    builder.AddNpgsqlDbContext<VibeDbContext>("vibedb");
+    builder.Services.AddScoped<IVibeDbContext>(sp => sp.GetRequiredService<VibeDbContext>());
 }
 builder.Services.AddMediatR(typeof(ApplicationAssemblyMarker).Assembly);
 builder.Services.AddAutoMapper(typeof(ApplicationAssemblyMarker).Assembly);
@@ -44,6 +48,8 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => Results.Ok(new { name = "VibeAPI", status = "ok" }));
 
 app.MapTodos();
+
+app.MapDefaultEndpoints();
 
 app.Run();
 
