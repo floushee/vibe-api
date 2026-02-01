@@ -14,16 +14,6 @@ A small, spec-driven ASP.NET Core Minimal API sample.
 
 > **Note:** With .NET 10, Aspire is included as NuGet packages — no separate workload install needed.
 
-## First-time setup
-
-Run the setup script to verify prerequisites and trust the HTTPS dev certificate:
-
-```bash
-./scripts/setup.sh
-```
-
-This checks for .NET SDK and Docker, generates and trusts the ASP.NET Core HTTPS dev certificate (requires `sudo` on Linux), and restores local .NET tools.
-
 ## Quick start
 
 ```bash
@@ -174,14 +164,6 @@ var api = builder.AddProject<Projects.VibeAPI_API>("vibeapi")
 - API: `vibeapi`
 - PgAdmin is included for database management (accessible via dashboard)
 
-## Specs
-
-Specs live in `specs/`:
-
-- `specs/001-todos-api.md`
-- `specs/002-todos-postgres-efcore-mediatr-automapper.md`
-- `specs/003-openapi-scalar-ui.md`
-
 ## Documentation hygiene
 
 When you change endpoints, behavior, or developer workflows, keep these in sync:
@@ -189,4 +171,3 @@ When you change endpoints, behavior, or developer workflows, keep these in sync:
 - `README.md`
 - `AGENTS.md`
 - `src/VibeAPI.API/VibeAPI.http`
-- Relevant `specs/*`

@@ -6,7 +6,7 @@ These rules apply to *every* change in this repository.
 
 - Add tests using xUnit for new/changed behavior (prefer API-level integration tests in `tests/VibeAPI.Tests`).
 - Add or update request examples in `src/VibeAPI.API/VibeAPI.http` for any new/changed endpoints.
-- Keep repository docs up to date when code changes affect them (at minimum: this file, `README.md`, relevant `specs/*`, and `src/VibeAPI.API/VibeAPI.http`).
+- Keep repository docs up to date when code changes affect them (at minimum: this file, `README.md`, and `src/VibeAPI.API/VibeAPI.http`).
 - Keep the public HTTP API compatible with the specs (unless the spec is being updated in the same change).
 - Ensure file names match the primary type they contain (no placeholder `Class1.cs`).
 - Keep one top-level `class` or `record` per file.
@@ -41,17 +41,9 @@ Notes:
 
 - .NET 10 SDK (version pinned in `global.json`).
 - Docker Desktop (Aspire uses it to run PostgreSQL).
-- HTTPS dev certificate trusted (run `./scripts/setup.sh` for first-time setup).
+- HTTPS dev certificate trusted.
 
 With .NET 10, Aspire is included as NuGet packages — no workload install needed.
-
-### First-time setup
-
-```bash
-./scripts/setup.sh
-```
-
-Checks prerequisites, trusts the HTTPS dev certificate, and restores local tools.
 
 ### Running the app
 
