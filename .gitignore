@@ -12,8 +12,14 @@
 .vs/
 .vscode/
 
+## Jetbrains
+.idea/
+
 ## OS
 .DS_Store
 Thumbs.db
+## Generated OpenAPI spec
+src/VibeAPI.API/VibeAPI.API.json
+
 ## Local env
 .env

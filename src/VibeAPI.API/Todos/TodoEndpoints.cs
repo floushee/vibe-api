@@ -23,7 +23,8 @@ public static class TodoEndpoints
                 var response = await sender.Send(new ListTodosQuery(resolvedOffset, resolvedLimit), cancellationToken);
                 return Results.Ok(response);
             })
-            .WithName("ListTodos");
+            .WithName("ListTodos")
+            .Produces<ListTodosResponse>();
 
         group.MapGet("/{id}", async (ISender sender, string id, CancellationToken cancellationToken) =>
             {
@@ -35,7 +36,9 @@ public static class TodoEndpoints
                 var todo = await sender.Send(new GetTodoQuery(guid), cancellationToken);
                 return todo is not null ? Results.Ok(todo) : Results.NotFound();
             })
-            .WithName("GetTodo");
+            .WithName("GetTodo")
+            .Produces<Todo>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/", async (ISender sender, CreateTodoRequest request, CancellationToken cancellationToken) =>
             {
@@ -51,7 +54,8 @@ public static class TodoEndpoints
 
                 return Results.Created($"/todos/{todo.Id}", todo);
             })
-            .WithName("CreateTodo");
+            .WithName("CreateTodo")
+            .Produces<Todo>(StatusCodes.Status201Created);
 
         group.MapPut("/{id}", async (ISender sender, string id, UpdateTodoRequest request, CancellationToken cancellationToken) =>
             {
@@ -72,7 +76,9 @@ public static class TodoEndpoints
 
                 return updated is not null ? Results.Ok(updated) : Results.NotFound();
             })
-            .WithName("UpdateTodo");
+            .WithName("UpdateTodo")
+            .Produces<Todo>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{id}", async (ISender sender, string id, CancellationToken cancellationToken) =>
             {
@@ -84,7 +90,8 @@ public static class TodoEndpoints
                 await sender.Send(new DeleteTodoCommand(guid), cancellationToken);
                 return Results.NoContent();
             })
-            .WithName("DeleteTodo");
+            .WithName("DeleteTodo")
+            .Produces(StatusCodes.Status204NoContent);
 
         return app;
     }

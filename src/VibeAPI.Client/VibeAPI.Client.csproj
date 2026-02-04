@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NSwag.ApiDescription.Client" Version="14.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <OpenApiReference Include="../VibeAPI.API/VibeAPI.API.json"
+                      CodeGenerator="NSwagCSharp"
+                      Namespace="VibeAPI.Client"
+                      ClassName="VibeApiClient">
+      <Options>/GenerateClientInterfaces:true /GenerateExceptionClasses:true</Options>
+    </OpenApiReference>
+  </ItemGroup>
+
+</Project>

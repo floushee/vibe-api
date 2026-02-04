@@ -20,9 +20,14 @@ These rules apply to *every* change in this repository.
 - `src/VibeAPI.Data`: EF Core `VibeDbContext`, provider registration, migrations.
 - `src/VibeAPI.Domain`: Domain models (persisted via EF Core).
 
+- `src/VibeAPI.Client`: NSwag-generated typed API client (auto-generated from OpenAPI spec at build time).
+- `src/VibeAPI.CLI`: Console app using System.CommandLine for ad-hoc API interaction.
+
 Dependency flow should stay one-way:
 
 `AppHost` -> `API` -> `Application` -> (`Data`, `Domain`)
+
+`CLI` -> `Client` -> (generated from `API`'s OpenAPI spec, no project reference)
 
 `ServiceDefaults` is referenced by all service projects (read-only configuration).
 
@@ -34,6 +39,8 @@ Notes:
 - Validation belongs close to the HTTP boundary (see `TodoEndpoints`).
 - Mapping belongs in AutoMapper profiles in `VibeAPI.Application`.
 - Connection strings are injected by Aspire when running via AppHost; no hardcoding needed.
+- The API project uses `Microsoft.Extensions.ApiDescription.Server` to emit `VibeAPI.API.json` (OpenAPI spec) at build time. This file is consumed by `VibeAPI.Client` via NSwag and is git-ignored.
+- The CLI is an ad-hoc tool (not orchestrated by AppHost). It accepts `--base-url` to target any API instance.
 
 ## Running & tooling
 

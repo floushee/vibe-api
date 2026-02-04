@@ -132,6 +132,8 @@ This project uses .NET Aspire for local development and distributed application 
 - `src/VibeAPI.Application`: CQRS/MediatR handlers, DTOs, mapping
 - `src/VibeAPI.Data`: EF Core DbContext and migrations
 - `src/VibeAPI.Domain`: Domain models
+- `src/VibeAPI.Client`: NSwag-generated typed API client library
+- `src/VibeAPI.CLI`: Console app (System.CommandLine) for ad-hoc API interaction
 
 ### Key Features
 
@@ -163,6 +165,26 @@ var api = builder.AddProject<Projects.VibeAPI_API>("vibeapi")
 - Database: `vibedb`
 - API: `vibeapi`
 - PgAdmin is included for database management (accessible via dashboard)
+
+## CLI
+
+A command-line client is available for ad-hoc interaction with the API.
+
+```bash
+# List todos (uses default base URL http://localhost:5153)
+dotnet run --project src/VibeAPI.CLI -- todos list
+
+# CRUD operations
+dotnet run --project src/VibeAPI.CLI -- todos get <id>
+dotnet run --project src/VibeAPI.CLI -- todos create "Buy milk"
+dotnet run --project src/VibeAPI.CLI -- todos update <id> "Buy oat milk" --completed
+dotnet run --project src/VibeAPI.CLI -- todos delete <id>
+
+# Target a different API instance
+dotnet run --project src/VibeAPI.CLI -- --base-url http://other-host:5000 todos list
+```
+
+The CLI uses a generated typed client from `VibeAPI.Client`. The client is auto-generated at build time from the API's OpenAPI spec via NSwag.
 
 ## Documentation hygiene
 
